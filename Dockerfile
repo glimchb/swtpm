@@ -21,12 +21,12 @@ COPY . /src/build-prep/swtpm
 WORKDIR /src/build-prep/swtpm
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN ./autogen.sh --prefix=/usr --libdir=/usr/lib --with-openssl --with-tss-user=root --with-tss-group=root \
-    && make -j"$(nproc)" V=1 \
-    && echo "softhsm or certtool are crashing pkcs11 test case" \
-    && { for f in test_tpm2_swtpm_localca_pkcs11.test test_tpm2_samples_swtpm_localca_pkcs11; do echo -en '#!/usr/bin/env bash'"\nexit 77\n" > tests/${f}; done; } \
-    && make -j"$(nproc)" V=1 VERBOSE=1 check \
-    && make DESTDIR=/app -j"$(nproc)" install
+RUN ./autogen.sh --prefix=/usr --libdir=/usr/lib --with-openssl --with-tss-user=root --with-tss-group=root
+RUN make -j"$(nproc)" V=1
+RUN echo "softhsm or certtool are crashing pkcs11 test case" \
+    && { for f in test_tpm2_swtpm_localca_pkcs11.test test_tpm2_samples_swtpm_localca_pkcs11; do echo -en '#!/usr/bin/env bash'"\nexit 77\n" > tests/${f}; done; } 
+RUN make -j"$(nproc)" V=1 VERBOSE=1 check 
+RUN make DESTDIR=/app -j"$(nproc)" install
 
 FROM alpine:3.19
 
